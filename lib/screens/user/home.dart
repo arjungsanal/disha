@@ -2,6 +2,8 @@ import 'package:disha/components/postcard.dart';
 import 'package:disha/screens/addpost_screen.dart';
 import 'package:disha/screens/event_screen.dart';
 import 'package:disha/screens/home_screen.dart';
+import 'package:disha/screens/user/group_screen.dart';
+import 'package:disha/screens/user/health.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -22,8 +24,8 @@ class _UserHomeState extends State<UserHome> {
   // Bottom navigation items
   static final List<Widget> _widgetOptions = <Widget>[
     HomeSection(), // Home section
-    const AddPostSection(), // Add post section
-    const EventSection(), // Event section
+    const GroupScreen(), // Group & Community
+    const HealthScreen(), // Health
   ];
 
   void _onItemTapped(int index) {
@@ -111,8 +113,8 @@ class _UserHomeState extends State<UserHome> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _buildNavItem(Icons.home, 'Home', 0),
-            _buildNavItem(Icons.add, 'Add', 1), // Plus button integrated into the nav bar
-            _buildNavItem(Icons.event, 'Events', 2),
+            _buildNavItem(Icons.group, 'Community', 1), // Plus button integrated into the nav bar
+            _buildNavItem(Icons.health_and_safety, 'Health', 2),
           ],
         ),
       ),

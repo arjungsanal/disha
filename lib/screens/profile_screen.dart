@@ -189,12 +189,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       leading: const Icon(Icons.account_circle,
                                           color: Colors.deepPurple),
                                       title: const Text(
-                                        'Login Provider',
+                                        'Acount Type',
                                         style: TextStyle(
                                             fontSize: 14, color: Colors.grey),
                                       ),
                                       subtitle: Text(
-                                        _currentUser?.userMetadata?['user_type'] ??
+                                        _currentUser?.userMetadata?['user_type'].toString().toUpperCase() ??
                                             'Unknown',
                                         style: const TextStyle(
                                             fontSize: 16,

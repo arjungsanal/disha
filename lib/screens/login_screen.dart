@@ -40,9 +40,12 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
         password: password,
       );
 
-      if (response.user != null) {
+      if (response.user != null && response.user?.userMetadata?['user_type']=='individual') {
         // Navigate to the home screen or another screen after successful sign-in
         Navigator.pushReplacementNamed(context, 'userHome_screen');
+      }
+      else if(response.user != null && response.user?.userMetadata?['user_type']=='organisation'){
+         Navigator.pushReplacementNamed(context, 'org_home');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

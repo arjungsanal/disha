@@ -1,5 +1,6 @@
 import 'package:disha/screens/landing_screen.dart';
 import 'package:disha/screens/login_screen.dart';
+import 'package:disha/screens/org/orghome.dart';
 import 'package:disha/screens/org/orgsignup.dart';
 import 'package:disha/screens/profile_screen.dart';
 import 'package:disha/screens/report_screen.dart';
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
         'orgSignup_screen' : (context)=>OrgSignupScreen(),
         'login_screen' : (context)=>  UserLoginScreen(),
         'profile_screen': (content)=>ProfileScreen(),
+        'org_home' : (context)=>OrgHome(),
       },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
