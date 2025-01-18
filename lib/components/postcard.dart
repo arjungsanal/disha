@@ -85,8 +85,8 @@ class PostCard extends StatelessWidget {
           Image.network(
             imageUrl,
             width: double.infinity,
-            height: 300,
-            fit: BoxFit.cover,
+            height: 500,
+            fit: BoxFit.fill,
           ),
           // Action Buttons (Like, Comment, Share)
           Padding(
