@@ -19,99 +19,96 @@ class PostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(8),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color.fromRGBO(255, 255, 255, 0.9), // Light white
-            Color.fromRGBO(245, 245, 245, 0.9), // Light grey
-          ],
-        ),
-        borderRadius: BorderRadius.circular(15),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-          BoxShadow(
-            color: Colors.white.withOpacity(0.9),
-            blurRadius: 10,
-            offset: const Offset(-4, -4),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Post Header (User Info)
-          ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.deepPurple,
-              child: Text(
-                userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            title: Text(
-              userName,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Colors.black87,
-              ),
-            ),
-            subtitle: Text(
-              postTime,
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 14,
-              ),
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.more_vert, color: Colors.deepPurple),
-              onPressed: () {
-                // Handle post options
-              },
-            ),
-          ),
-          // Post Image
-          ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: Image.network(
-              imageUrl,
-              width: double.infinity,
-              height: 200,
-              fit: BoxFit.cover,
-            ),
-          ),
-          // Post Actions (Like, Comment, Share)
+          // User Info (Top Row)
           Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.deepPurple,
+                  child: Text(
+                    userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      userName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    Text(
+                      postTime,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.more_vert, color: Colors.black54),
+                  onPressed: () {
+                    // Handle post options
+                  },
+                ),
+              ],
+            ),
+          ),
+          // Post Image (Full Width)
+          Image.network(
+            imageUrl,
+            width: double.infinity,
+            height: 300,
+            fit: BoxFit.cover,
+          ),
+          // Action Buttons (Like, Comment, Share)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.favorite_border, color: Colors.deepPurple),
+                  icon: const Icon(Icons.favorite_border, color: Colors.black87),
                   onPressed: () {
                     // Handle like action
                   },
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.comment, color: Colors.deepPurple),
+                  icon: const Icon(Icons.comment, color: Colors.black87),
                   onPressed: () {
                     // Handle comment action
                   },
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.share, color: Colors.deepPurple),
+                  icon: const Icon(Icons.share, color: Colors.black87),
                   onPressed: () {
                     // Handle share action
                   },
@@ -119,7 +116,7 @@ class PostCard extends StatelessWidget {
               ],
             ),
           ),
-          // Post Caption
+          // Caption
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
