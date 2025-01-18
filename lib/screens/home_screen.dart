@@ -1,5 +1,6 @@
 import 'package:disha/components/postcard.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeSection extends StatefulWidget {
   @override
@@ -7,35 +8,44 @@ class HomeSection extends StatefulWidget {
 }
 
 class _HomeSectionState extends State<HomeSection> {
-  // Dummy data for posts
-  final List<Map<String, dynamic>> _posts = [
-    {
-      'user': {'email': 'user1@example.com'},
-      'created_at': '2023-10-01T12:00:00Z',
-      'image_url': 'https://imgs.search.brave.com/Bw8VO770wFId17goUnaahxxZSVWDelmTD78yeZovt-k/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzAyLzEwLzUwLzQ0/LzM2MF9GXzIxMDUw/NDQ3Ml9IekM2M3Nl/RWo3cW9iSm1rcm15/Ym5ZQkFMUDJRRmdk/TS5qcGc',
-      'caption': 'This is a dummy post 1',
-    },
-    {
-      'user': {'email': 'user2@example.com'},
-      'created_at': '2023-10-02T14:30:00Z',
-      'image_url': 'https://imgs.search.brave.com/p6x_e4qGegSm2pi2Fs64QYPEAg9H9ldODp-LYOiuw9Q/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzAyLzk0LzMwLzAw/LzM2MF9GXzI5NDMw/MDA2OV9rS3F1ZEVZ/dEM2QmtLSFk3TzFq/UTA1V2NVUHJDOGhI/aS5qcGc',
-      'caption': 'This is a dummy post 2',
-    },
-    {
-      'user': {'email': 'user3@example.com'},
-      'created_at': '2023-10-03T09:15:00Z',
-      'image_url': 'https://imgs.search.brave.com/cE-hkf7uBeeNvrEa8PTHZ3sg4omvPmn32p3ow5A8zvw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jb2lu/c3RhdGljcy5jb20v/d3AtY29udGVudC91/cGxvYWRzLzIwMTgv/MDMvUm9iZXJ0LURv/d25leS1Kci4tUXVv/dGVzLmpwZw',
-      'caption': 'This is a dummy post 3',
-    },
-  ];
+  final SupabaseClient _supabase = Supabase.instance.client;
+  List<Map<String, dynamic>> _posts = [];
+  bool _isLoading = true;
+  String _errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPosts();
+  }
+
+  // Fetch posts from Supabase
+  Future<void> _fetchPosts() async {
+    try {
+      final response = await _supabase
+          .from('posts')
+          .select('*')
+          .order('created_at', ascending: false);
+
+      setState(() {
+        _posts = List<Map<String, dynamic>>.from(response);
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Failed to load posts. Please try again later.';
+        _isLoading = false;
+      });
+      print('Error fetching posts: $e');
+    }
+  }
 
   // Function to handle refresh
   Future<void> _onRefresh() async {
-    // Simulate a network call to fetch new posts
-    await Future.delayed(const Duration(seconds: 2));
     setState(() {
-      // Update the posts list (e.g., fetch new data from an API)
+      _isLoading = true;
     });
+    await _fetchPosts();
   }
 
   @override
@@ -76,6 +86,28 @@ class _HomeSectionState extends State<HomeSection> {
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
+                    if (_isLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      );
+                    } else if (_errorMessage.isNotEmpty) {
+                      return Center(
+                        child: Text(
+                          _errorMessage,
+                          style: const TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      );
+                    } else if (_posts.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'No posts available.',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      );
+                    }
+
                     final post = _posts[index];
                     final user = post['user'] as Map<String, dynamic>?; // User details
                     return Container(
@@ -101,7 +133,9 @@ class _HomeSectionState extends State<HomeSection> {
                       ),
                     );
                   },
-                  childCount: _posts.length,
+                  childCount: _isLoading || _errorMessage.isNotEmpty || _posts.isEmpty
+                      ? 1
+                      : _posts.length,
                 ),
               ),
             ],
