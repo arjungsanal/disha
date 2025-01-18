@@ -45,6 +45,7 @@ class LandingScreen extends StatelessWidget {
                   // Get Started Button
                   ElevatedButton(
                     onPressed: () {
+                      Navigator.pushNamed(context, 'usersignin_screen');
                       // Add your onPressed logic here
                     },
                     style: ElevatedButton.styleFrom(

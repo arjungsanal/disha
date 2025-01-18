@@ -1,8 +1,16 @@
 import 'package:disha/constant/typography.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ReportScreen extends StatelessWidget {
+class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
+
+  @override
+  _ReportScreenState createState() => _ReportScreenState();
+}
+
+class _ReportScreenState extends State<ReportScreen> {
+  final SupabaseClient supabase = Supabase.instance.client;
 
   // List of districts in Kerala
   final List<String> districts = const [
@@ -22,11 +30,15 @@ class ReportScreen extends StatelessWidget {
     'Kasaragod',
   ];
 
+  String? selectedDistrict; // Variable to store the selected district
+  final TextEditingController locationController = TextEditingController();
+  final TextEditingController messageController = TextEditingController();
+  bool isLoading = false; // Track loading state
+
   @override
   Widget build(BuildContext context) {
-    String? selectedDistrict; // Variable to store the selected district
-
     return Scaffold(
+      //bottomNavigationBar: BottomNavigationBar(items: items),
       body: SafeArea(
         child: Container(
           width: double.maxFinite,
@@ -122,7 +134,9 @@ class ReportScreen extends StatelessWidget {
                               ),
                               value: selectedDistrict,
                               onChanged: (String? newValue) {
-                                selectedDistrict = newValue; // Update the selected district
+                                setState(() {
+                                  selectedDistrict = newValue; // Update the selected district
+                                });
                               },
                               items: districts.map<DropdownMenuItem<String>>((String value) {
                                 return DropdownMenuItem<String>(
@@ -134,6 +148,7 @@ class ReportScreen extends StatelessWidget {
                             const SizedBox(height: 20),
                             // Location TextField
                             TextField(
+                              controller: locationController,
                               decoration: InputDecoration(
                                 hintText: 'Enter your location',
                                 hintStyle: CustomStyle.Light.copyWith(
@@ -170,6 +185,7 @@ class ReportScreen extends StatelessWidget {
                             const SizedBox(height: 20),
                             // Message TextField
                             TextField(
+                              controller: messageController,
                               maxLines: 5, // Allow multiple lines for the message
                               decoration: InputDecoration(
                                 hintText: 'Enter your message',
@@ -206,38 +222,97 @@ class ReportScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 30),
                             // Gradient Submit Button
-                            InkWell(
-                              onTap: () {
-                                // Add your onPressed logic here
-                              },
-                              child: Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 40,
-                                  vertical: 16,
-                                ),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      Color.fromRGBO(59, 7, 142, 0.8), // Lighter purple
-                                      Color.fromRGBO(103, 13, 247, 0.898), // Darker purple
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'Submit',
-                                    style: CustomStyle.Medium.copyWith(
-                                      fontSize: 18,
-                                      color: Colors.white,
+                            isLoading
+                                ? const CircularProgressIndicator() // Show loader
+                                : InkWell(
+                                    onTap: () async {
+                                      if (selectedDistrict == null ||
+                                          locationController.text.isEmpty ||
+                                          messageController.text.isEmpty) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Please fill all fields'),
+                                          ),
+                                        );
+                                        return;
+                                      }
+
+                                      setState(() {
+                                        isLoading = true; // Show loader
+                                      });
+
+                                      try {
+                                        // Insert data into Supabase
+                                        await supabase.from('reports').insert({
+                                          'district': selectedDistrict,
+                                          'location': locationController.text,
+                                          'message': messageController.text,
+                                        });
+
+                                        // Show success dialog
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: const Text('Success'),
+                                            content: const Text('Your report has been submitted.'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context); // Close dialog
+                                                },
+                                                child: const Text('OK'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+
+                                        // Clear form fields
+                                        setState(() {
+                                          selectedDistrict = null;
+                                          locationController.clear();
+                                          messageController.clear();
+                                        });
+                                      } catch (e) {
+                                        
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('Error: $e'),
+                                          ),
+                                        );
+                                      } finally {
+                                        setState(() {
+                                          isLoading = false; // Hide loader
+                                        });
+                                      }
+                                    },
+                                    child: Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 40,
+                                        vertical: 16,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.centerLeft,
+                                          end: Alignment.centerRight,
+                                          colors: [
+                                            Color.fromRGBO(59, 7, 142, 0.8), // Lighter purple
+                                            Color.fromRGBO(103, 13, 247, 0.898), // Darker purple
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'Submit',
+                                          style: CustomStyle.Medium.copyWith(
+                                            fontSize: 18,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            ),
                             const SizedBox(height: 20), // Extra space at the bottom
                           ],
                         ),
@@ -253,3 +328,5 @@ class ReportScreen extends StatelessWidget {
     );
   }
 }
+
+
