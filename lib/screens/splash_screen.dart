@@ -10,11 +10,9 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
-@override
+  @override
   void initState() {
     gotoLogin();
-    // TODO: implement initState
     super.initState();
   }
 
@@ -28,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
             end: Alignment.centerRight,
             colors: [
               Color.fromRGBO(59, 7, 142, 0.8), // Lighter purple
-              Color.fromRGBO(103, 13, 247, 0.898),  // Darker purple
+              Color.fromRGBO(103, 13, 247, 0.898), // Darker purple
             ],
           ),
         ),
@@ -44,23 +42,35 @@ class _SplashScreenState extends State<SplashScreen> {
                   height: 0,
                 ),
               ),
-              Text("A new way of life",
-              style: CustomStyle.Bold.copyWith(
-                color: Colors.white,
-                fontSize: 22
+              Text(
+                "A new way of life",
+                style: CustomStyle.Bold.copyWith(
+                  color: Colors.white,
+                  fontSize: 22,
+                ),
               ),
-              
-              )
             ],
           ),
-          
         ),
       ),
     );
   }
 
-   Future<void> gotoLogin() async{
-   await Future.delayed(Duration(seconds: 3));
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx)=>LandingScreen()));
+  Future<void> gotoLogin() async {
+    await Future.delayed(const Duration(seconds: 3)); // Simulate a delay for loading
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 1000), // Transition duration
+        pageBuilder: (context, animation, secondaryAnimation) => const LandingScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          // Fade transition
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+      ),
+    );
   }
 }

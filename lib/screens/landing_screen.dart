@@ -78,7 +78,7 @@ class LandingScreen extends StatelessWidget {
             child: Center(
               child: TextButton(
                 onPressed: () {
-                  // Add your onPressed logic here
+                  Navigator.pushNamed(context, 'report_screen');
                 },
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
