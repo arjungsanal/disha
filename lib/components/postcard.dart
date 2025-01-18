@@ -5,6 +5,7 @@ class PostCard extends StatelessWidget {
   final String postTime;
   final String imageUrl;
   final String caption;
+  final String latestComment;
 
   const PostCard({
     super.key,
@@ -12,15 +13,35 @@ class PostCard extends StatelessWidget {
     required this.postTime,
     required this.imageUrl,
     required this.caption,
+    this.latestComment = '',
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.all(8),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color.fromRGBO(255, 255, 255, 0.9), // Light white
+            Color.fromRGBO(245, 245, 245, 0.9), // Light grey
+          ],
+        ),
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: Colors.white.withOpacity(0.9),
+            blurRadius: 10,
+            offset: const Offset(-4, -4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,6 +64,7 @@ class PostCard extends StatelessWidget {
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
+                color: Colors.black87,
               ),
             ),
             subtitle: Text(
@@ -53,18 +75,21 @@ class PostCard extends StatelessWidget {
               ),
             ),
             trailing: IconButton(
-              icon: const Icon(Icons.more_vert),
+              icon: const Icon(Icons.more_vert, color: Colors.deepPurple),
               onPressed: () {
                 // Handle post options
               },
             ),
           ),
           // Post Image
-          Image.asset(
-            imageUrl,
-            width: double.infinity,
-            height: 200,
-            fit: BoxFit.cover,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: Image.network(
+              imageUrl,
+              width: double.infinity,
+              height: 200,
+              fit: BoxFit.cover,
+            ),
           ),
           // Post Actions (Like, Comment, Share)
           Padding(
@@ -72,19 +97,21 @@ class PostCard extends StatelessWidget {
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.favorite_border),
+                  icon: const Icon(Icons.favorite_border, color: Colors.deepPurple),
                   onPressed: () {
                     // Handle like action
                   },
                 ),
+                const SizedBox(width: 16),
                 IconButton(
-                  icon: const Icon(Icons.comment),
+                  icon: const Icon(Icons.comment, color: Colors.deepPurple),
                   onPressed: () {
                     // Handle comment action
                   },
                 ),
+                const SizedBox(width: 16),
                 IconButton(
-                  icon: const Icon(Icons.share),
+                  icon: const Icon(Icons.share, color: Colors.deepPurple),
                   onPressed: () {
                     // Handle share action
                   },
@@ -103,6 +130,18 @@ class PostCard extends StatelessWidget {
               ),
             ),
           ),
+          // Latest Comment Preview
+          if (latestComment.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                'Latest comment: $latestComment',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
           const SizedBox(height: 8),
         ],
       ),

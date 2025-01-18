@@ -1,7 +1,13 @@
 import 'package:disha/components/postcard.dart';
+import 'package:disha/screens/addpost_screen.dart';
+import 'package:disha/screens/event_screen.dart';
+import 'package:disha/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
- // Import the reusable PostCard
+
+
+// Initialize Supabase client
+final supabase = Supabase.instance.client;
 
 class UserHome extends StatefulWidget {
   const UserHome({super.key});
@@ -16,8 +22,8 @@ class _UserHomeState extends State<UserHome> {
   // Bottom navigation items
   static final List<Widget> _widgetOptions = <Widget>[
     HomeSection(), // Home section
-    AddPostSection(), // Add post section
-    EventSection(), // Event section
+    const AddPostSection(), // Add post section
+    const EventSection(), // Event section
   ];
 
   void _onItemTapped(int index) {
@@ -28,19 +34,22 @@ class _UserHomeState extends State<UserHome> {
 
   @override
   Widget build(BuildContext context) {
-    // Get the current user from Supabase
-    final user = Supabase.instance.client.auth.currentUser;
-    final displayName = user?.userMetadata?['display_name'] ?? 'User';
-    final displayNameInitial = displayName.isNotEmpty ? displayName[0] : 'U';
-
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            // Handle back button press
+            Navigator.pop(context);
+          },
+        ),
         title: const Text(
           'Disha',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.white,
+            fontFamily: 'Roboto', // Use a modern font
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -58,19 +67,15 @@ class _UserHomeState extends State<UserHome> {
           ),
         ),
         actions: [
-          // Display the first letter of the user's display name
+          // User avatar or profile icon
           Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              backgroundColor: Colors.deepPurple,
-              child: Text(
-                displayNameInitial.toUpperCase(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            child: IconButton(
+              onPressed: (){
+                Navigator.pushNamed(context, 'profile_screen');
+              },
+              // backgroundColor: Colors.deepPurple,
+              icon: const Icon(Icons.person, color: Colors.white),
             ),
           ),
         ],
@@ -88,24 +93,77 @@ class _UserHomeState extends State<UserHome> {
         ),
         child: _widgetOptions[_selectedIndex], // Display the selected section
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: Colors.deepPurple,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Colors.white,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_box),
-            label: 'Add Post',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event),
-            label: 'Event',
+      bottomNavigationBar: Container(
+        height: 80, // Increased height to accommodate the FAB
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.9), // Semi-transparent white
+          borderRadius: BorderRadius.circular(30), // Rounded corners
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(Icons.home, 'Home', 0),
+            _buildNavItem(Icons.add, 'Add', 1), // Plus button integrated into the nav bar
+            _buildNavItem(Icons.event, 'Events', 2),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper method to build navigation items
+  Widget _buildNavItem(IconData icon, String label, int index) {
+    return GestureDetector(
+      onTap: () {
+        _onItemTapped(index);
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Add a container for the FAB to prevent overflow
+          if (index == 1)
+            Container(
+              width: 50, // Adjusted width
+              height: 50, // Adjusted height
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15), // Rounded corners
+                color: _selectedIndex == index ? Colors.deepPurple : Colors.grey[300],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 28,
+              ),
+            )
+          else
+            Icon(
+              icon,
+              color: _selectedIndex == index ? Colors.deepPurple : Colors.grey,
+              size: 28,
+            ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: _selectedIndex == index ? Colors.deepPurple : Colors.grey,
+              fontSize: 12,
+              fontWeight: _selectedIndex == index ? FontWeight.bold : FontWeight.normal,
+            ),
           ),
         ],
       ),
@@ -113,46 +171,5 @@ class _UserHomeState extends State<UserHome> {
   }
 }
 
-// Home Section (Posts Feed)
-class HomeSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: 10, // Example: 10 posts
-      itemBuilder: (context, index) {
-        return PostCard (
-          userName: 'User $index',
-          postTime: '${index + 1} hours ago',
-          imageUrl: 'assets/post_image_$index.jpg', // Example image
-          caption: 'This is a sample post caption $index. Lorem ipsum dolor sit amet.',
-        );
-      },
-    );
-  }
-}
 
-// Add Post Section
-class AddPostSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Add Post Section',
-        style: TextStyle(fontSize: 24, color: Colors.white),
-      ),
-    );
-  }
-}
 
-// Event Section
-class EventSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Event Section',
-        style: TextStyle(fontSize: 24, color: Colors.white),
-      ),
-    );
-  }
-}
