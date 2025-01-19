@@ -1,4 +1,4 @@
-# Disha - Empowering Recovery, Inspiring Change
+# Disha - A new way of life
 
 ## Overview
 
