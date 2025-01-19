@@ -49,7 +49,7 @@
    git clone https://github.com/yourusername/Disha.git
 2. **Change repository:**
    ```bash
-    cd Disha
+    cd disha
 3. **Install Dependencies:**
    ```bash
     flutter pub get
