@@ -191,7 +191,7 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
                                 color: Colors.grey,
                               ),
                             ),
-                            const SizedBox(height: 30),
+                            const SizedBox(height: 50),
                             // Email Field
                             TextField(
                               controller: _emailController,
@@ -281,13 +281,16 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
                                     ? CircularProgressIndicator(
                                         color: Colors.white, // Loader color
                                       )
-                                    : Text(
-                                        "Sign In",
-                                        style: CustomStyle.Medium.copyWith(
-                                          fontSize: 16,
-                                          color: Colors.white,
+                                    : Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 130),
+                                      child: Text(
+                                          "Sign In",
+                                          style: CustomStyle.Medium.copyWith(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
                                         ),
-                                      ),
+                                    ),
                               ),
                             ),
                           ],

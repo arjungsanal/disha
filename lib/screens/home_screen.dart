@@ -142,13 +142,13 @@ class _HomeSectionState extends State<HomeSection> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Handle create post action
-        },
-        backgroundColor: Colors.deepPurple, // Deep purple FAB
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     // Handle create post action
+      //   },
+      //   backgroundColor: Colors.deepPurple, // Deep purple FAB
+      //   child: const Icon(Icons.add, color: Colors.white),
+      // ),
     );
   }
 
